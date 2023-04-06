@@ -1,8 +1,28 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  color: red;
 }
 
 a {
   color: #00B7FF;
 }
+
+
+.sidebar {
+  background-color: #f8f8f8;
+  padding: 20px;
+}
+.sidebar h2 {
+  font-size: 1.12rem;
+}
+.list-group-item, .dropdown-item {
+  cursor: pointer;
+  transition: background-color 0.3s ease; 
+}
+.list-group-item:hover, .dropdown-item:hover {
+  background-color: #00b7ff;
+  color: white;
+}
+
+

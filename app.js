@@ -1,6 +1,7 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
+const mime = require('mime');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
@@ -22,9 +23,22 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
+app.use((req, res, next) =>{
+  const mimeType = mime.getType(req.url);
+  if(mimeType==='text/css') {
+    res.setHeader('Content-Type', mimeType);
+  }
+    next();
+});
+
 app.get('/', function(req, res)  {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+
+//app.get('/stylesheets/style.css', function(req, res) {
+//  res.setHeader('Content-Type', mime.getType('style.css'));
+//  res.sendFile(__dirname, 'public', );
+//});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
