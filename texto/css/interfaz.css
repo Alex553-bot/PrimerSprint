@@ -1,0 +1,25 @@
+#menuLateral{
+  background-color: blue;
+  height:auto;
+}
+
+ul{
+  text-decoration: none;
+  padding: 0%;
+}
+
+li{
+  list-style-type: none;
+}
+
+#menuLateral button{
+  background-color: blue;
+  color: white;
+  border: none;
+  width: 100%;
+  height: 7vh;
+  font-size:2.4vh;
+  padding: 3%;
+  text-align: left;
+}
+  
