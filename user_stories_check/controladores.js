@@ -1,10 +1,12 @@
 // funcion 1 para corregir ortograficamente las historias de usuario
 
+const { connect } = require('http2');
+
 // Importamos la librería
-const Typo = requirte('typo-js');
+const Typo = require('typo-js');
 
 // Creamos un objeto con el diccionario del idioma deseado
-const dictionary = new Typo('es_ES');
+const dictionary = new Typo('en_US');
 
 // Función para corregir el texto
 function corregirTexto(texto) {
@@ -28,22 +30,70 @@ function corregirTexto(texto) {
   // Unimos las palabras corregidas en un solo texto
   return palabras.join(' ');
 }
+// funcion para crear nuevo documento - es mas para empezar el guardado
+async function crearArchivo() {
+  var mysql = require('mysql');
 
-// funcion para crear nuevo documento
-function crearArchivo() {
-  let contenido = "";
-
-
-  let archivo = new File([contenido], "nuevodocumento.txt", {
-    type: "text/plain",
+  var con = mysql.createConnection({
+    host: "18.189.51.11",
+    user: "sis2",
+    password: "Gat0235!52", database: "primersprint"
   });
 
-  console.log("Archivo creado: ", archivo);
+  const fileName = 'nuevo_documento.txt';
+
+  const attributes = {
+    name: "",
+    persona: "",
+    desire: "",
+  }
+
+
+  await con.connect(function (err) {
+    if (err) throw err;
+    console.log("Connected!");
+    const query = `INSERT INTO UserStory (Name, Persona, Desire) VALUES ('${attributes.name}', '${attributes.persona}', '${attributes.desire}')`;
+    con.query(query, (error, results, fields) => {
+      if (error) {
+        console.error(error);
+        return;
+      }
+      console.log(`archivo creado`);
+      con.end();
+    });
+  });
 
 }
 
+module.exports = { crearArchivo };
+
+const diccionario = {
+
+  //el fomrato para añadir palabra redundante es palabraRedundante: ["sugerencia1", "sugerencia2", ...],
+
+  'repetir': ['reiterar', 'retroalimentar', 'duplicar', 'copiar', 'reforzar', 'persistir', 'redundar', 'insistir', 'recapitular'],
+  'comenzar': ['iniciar', 'empezar', 'arrancar', 'encender', 'establecer', 'abrir', 'despertar', 'activar', 'fundar'],
+  'bello': ['hermoso', 'lindo', 'bonito', 'atractivo', 'agradable', 'gracioso', 'encantador', 'precioso', 'radiante'],
+  'pequeño': ['chico', 'menudo', 'diminuto', 'minúsculo', 'exiguo', 'escaso', 'reducido', 'limitado', 'insignificante'],
+  'gordo': ['obeso', 'corpulento', 'obeso mórbido', 'voluminoso', 'llenito', 'fofo', 'abultado', 'panzón', 'rollizo'],
+  'delgado': ['flaco', 'fino', 'esbelto', 'elegante', 'estrecho', 'escaso', 'débil', 'frágil', 'menudo'],
+  'interesante': ['atractivo', 'apasionante', 'sorprendente', 'apetitoso', 'fascinante', 'divertido', 'emocionante', 'entretenido', 'estimulante'],
+  'aburrido': ['monótono', 'tedioso', 'insípido', 'cansino', 'soporífero', 'fastidioso', 'pesado', 'plomizo', 'molesto'],
+  'triste': ['melancólico', 'abatido', 'desolado', 'doloroso', 'desdichado', 'infeliz', 'angustiado', 'apenado', 'deprimido'],
+  'feliz': ['contento', 'alegre', 'gozoso', 'divertido', 'satisfecho', 'encantado', 'radiante', 'triunfante', 'animado'],
+  'sabroso': ['delicioso', 'rico', 'exquisito', 'apetitoso', 'gustoso', 'agridulce', 'picante', 'salado', 'dulce'],
+  'duro': ['rígido', 'sólido', 'firme', 'resistente', 'tenaz', 'incorruptible', 'inflexible', 'severo', 'difícil'],
+  'suave': ['blando', 'dulce', 'sedoso', 'ternura', 'tranquilo', 'relajado', 'cálido', 'fino', 'plácido'],
+  'rápido': ['veloz', 'ligero', 'ágil', 'pronto', 'acelerado', 'inmediato', 'presto', 'deprisa', 'expedito'],
+  'lento': ['perezoso', 'tardo', 'despacio', 'lerdo', 'calmado', 'remolón', 'pausado', 'sosiego', 'relajado'],
+  "coche": ["automóvil", "carro", "vehículo"],
+  "comer": ["alimentarse", "degustar", "ingerir"],
+
+}
+const palabrasProhibidas = ['sistema', 'aplicacion', 'integrar']
+
 // funcion semantica
-// Definición de la función que sugiere correcciones para problemas de redundancia en un texto
+// sugiere correcciones para problemas de redundancia y palabras prohibidas en un texto
 function verificadordeSemantica(texto, palabrasProhibidas, diccionario) {
   // Separamos el texto en palabras
   const palabras = texto.split(" ");
@@ -59,7 +109,7 @@ function verificadordeSemantica(texto, palabrasProhibidas, diccionario) {
     if (palabrasProhibidas.includes(palabra)) {
       // Si la palabra es prohibida, sugerimos una corrección
       if (diccionario[palabra]) {
-        sugerencias[palabra] = diccionario[palabra];
+        sugerencias[palabra] = palabrasProhibidas[palabra];
       }
     } else {
       // Si la palabra no es prohibida, verificamos si es redundante
