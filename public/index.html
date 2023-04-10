@@ -6,6 +6,7 @@
   <script type="text/javascript" src="javascripts/jquery-1.12.0.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="javascripts/editor.js"></script> 
+  <script type="text/javascript" src="javascripts/eddy.js"></script> 
   
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -45,10 +46,11 @@
       });
 
       $('#btn-semantica').click(function(e) {
-        //let cont = $('#txt-content').Editor('getText');
-        //cont = corregirTexto(cont);
-       // window.location.href='/semantica/'+encodeURIComponent(cont);
-        $('#txt-content').spellcheck = true;
+        let cont = $('#txt-content').Editor('getText');
+        let result = verificadordeSemantica(cont);
+        console.log(result);
+        //window.location.href='/semantica/'+encodeURIComponent(cont);
+        $('#txt-content').val = result;
       });
 
       $('btn-sintactica').click(function(e) {
@@ -90,7 +92,7 @@
             </button>
           </li>
           <li>
-            <button form='frm-test' type='submit' id='btn-sintactico'>
+            <button form='frm-test' id='btn-sintactico'>
               <i class="fa-sharp fa-regular fa-open" style="color: #ffffff;"></i>
               Revisar Sintactica
             </button>

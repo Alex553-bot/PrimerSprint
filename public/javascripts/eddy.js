@@ -2,33 +2,6 @@
 
 // Importamos la librería
 //const Typo = require('typo-js');
-//const Typo = import('typo-js');
-import Typo from 'https://cdn.skypack.dev/typo-js'
-// Creamos un objeto con el diccionario del idioma deseado
-const dictionary = new Typo('en_US');
-
-// Función para corregir el texto
-function corregirTexto(texto) {
-  // Separamos el texto en palabras
-  const palabras = texto.split(' ');
-
-  // Recorremos cada palabra y corregimos la ortografía
-  for (let i = 0; i < palabras.length; i++) {
-    // Verificamos si la palabra está mal escrita
-    if (!dictionary.check(palabras[i])) {
-      // Obtenemos sugerencias de corrección
-      const sugerencias = dictionary.suggest(palabras[i]);
-
-      // Si hay sugerencias, reemplazamos la palabra por la primera sugerencia
-      if (sugerencias.length > 0) {
-        palabras[i] = sugerencias[0];
-      }
-    }
-  }
-
-  // Unimos las palabras corregidas en un solo texto
-  return palabras.join(' ');
-}
 // funcion para crear nuevo documento - es mas para empezar el guardado
 async function crearArchivo() {
   var mysql = require('mysql');
@@ -64,8 +37,6 @@ async function crearArchivo() {
 
 }
 
-module.exports = { crearArchivo };
-
 const diccionario = {
 
   //el fomrato para añadir palabra redundante es palabraRedundante: ["sugerencia1", "sugerencia2", ...],
@@ -89,16 +60,22 @@ const diccionario = {
   "comer": ["alimentarse", "degustar", "ingerir"],
 
 }
-const palabrasProhibidas = ['sistema', 'aplicacion', 'integrar']
+const palabrasProhibidas = ['sistema', 'aplicacion', 'integrar'];
 
 // funcion semantica
 // sugiere correcciones para problemas de redundancia y palabras prohibidas en un texto
-function verificadordeSemantica(texto, palabrasProhibidas, diccionario) {
+function verificadordeSemantica(texto) {
+  texto = texto.replace('<b>', '');
+  texto = texto.replace('</b>', '');
+  texto = texto.replace('<br>', '');
+  texto = texto.replace('</br>', '');
+  console.log(texto);
   // Separamos el texto en palabras
   const palabras = texto.split(" ");
+  console.log(palabras);
 
   // Objeto para almacenar las palabras redundantes encontradas y sus sugerencias de corrección
-  const sugerencias = {};
+  let sugerencias = ["sugerencias: "];
 
   // Recorremos todas las palabras del texto
   for (let i = 0; i < palabras.length; i++) {
@@ -107,9 +84,7 @@ function verificadordeSemantica(texto, palabrasProhibidas, diccionario) {
     // Verificamos si la palabra se encuentra en la lista de palabras prohibidas
     if (palabrasProhibidas.includes(palabra)) {
       // Si la palabra es prohibida, sugerimos una corrección
-      if (diccionario[palabra]) {
-        sugerencias[palabra] = palabrasProhibidas[palabra];
-      }
+      sugerencias.push("usaste la palabra " + palabra + "este tipo de terminos no se deberian usar");
     } else {
       // Si la palabra no es prohibida, verificamos si es redundante
       if (palabra in sugerencias) {
@@ -117,14 +92,14 @@ function verificadordeSemantica(texto, palabrasProhibidas, diccionario) {
         palabras[i] = sugerencias[palabra];
       } else {
         // Si es la primera vez que encontramos la palabra, verificamos si es redundante
+        let k = 0;
         for (let j = i + 1; j < palabras.length; j++) {
           const otraPalabra = palabras[j].toLowerCase();
           if (otraPalabra === palabra) {
             // Si encontramos una palabra redundante, sugerimos su corrección
-            if (diccionario[palabra]) {
-              sugerencias[palabra] = diccionario[palabra];
-              palabras[i] = diccionario[palabra];
-              palabras[j] = diccionario[palabra];
+            if (diccionario[palabra]& diccionario[palabra].length > k) {
+              palabras[j] = diccionario[palabra][k];
+              k++;
             }
           }
         }
@@ -134,10 +109,7 @@ function verificadordeSemantica(texto, palabrasProhibidas, diccionario) {
 
   // Unimos las palabras sugeridas en un nuevo texto
   const textoSugerido = palabras.join(" ");
-
+  const textoextra = sugerencias.join("\n");
   // Retornamos el texto sugerido y las correcciones realizadas
-  return {
-    texto: textoSugerido,
-    correcciones: sugerencias
-  };
+  return textoSugerido + "\n" + textoextra;
 }
