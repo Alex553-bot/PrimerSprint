@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <title>Editor de US</title>
   
@@ -19,17 +19,40 @@
   
   <!-- Iconos -->
   <script src="https://kit.fontawesome.com/8e0d6a94ac.js" crossorigin="anonymous"></script>
-
   <script type="text/javascript">
+    let titulo = 'nuevo';
     $(document).ready(function(){
       $('#txt-content').Editor();
-
+      const contenidoEditor = $('#txt-content').Editor('getText').toString();
+      let aux;
       $('#txt-content').Editor('setText', ['<b>Yo como:</b><br><b>Requiero:</b><br><b>Para:</b>']);
 
       $('#btn-enviar').click(function(e){
         e.preventDefault();
-        $('#txt-content').text($('#txt-content').Editor('getText'));
-        $('#frm-test').submit();        
+        titulo = prompt('Escribe el nombre del archivo: ', 'NUEVO');
+
+        const contenidoEditor = $('#txt-content').Editor('getText');
+        window.location.href='/save/' + encodeURIComponent(titulo+"TITULO"+contenidoEditor);
+        //$.post('/save', { contenidoEditor:contenidoEditor }, function(data) {
+        //});
+//        $('#txt-content').text($('#txt-content').Editor('getText'));
+//        $('#frm-test').submit();        
+      });
+
+      $('#btn-nuevo').click(function(e){
+        e.preventDefault();
+        $('#txt-content').Editor('setText', ['<b>Yo como:</b><br><b>Requiero:</b><br><b>Para:</b>']);
+      });
+
+      $('#btn-semantica').click(function(e) {
+        //let cont = $('#txt-content').Editor('getText');
+        //cont = corregirTexto(cont);
+       // window.location.href='/semantica/'+encodeURIComponent(cont);
+        $('#txt-content').spellcheck = true;
+      });
+
+      $('btn-sintactica').click(function(e) {
+        console.log('Aprete un boton');
       });
     }); 
   </script>
@@ -49,15 +72,27 @@
             </button>
           </li>
           <li>
-            <button>
+            <button form='frm-test' type='submit' id='btn-enviar'>
               <i class="fa-regular fa-floppy-disk" style="color: #ffffff;"></i>
               Guardar
             </button>
           </li>
           <li>
-            <button>
+            <button form='frm-test' type='submit' id='btn-nuevo'>
               <i class="fa-sharp fa-regular fa-plus" style="color: #ffffff;"></i>
               Nuevo
+            </button>
+          </li>
+          <li>
+            <button  id='btn-semantica'>
+              <i class="fa-sharp fa-regular fa-bars" style="color: #ffffff;"></i>
+              Revisar Semantica
+            </button>
+          </li>
+          <li>
+            <button form='frm-test' type='submit' id='btn-sintactico'>
+              <i class="fa-sharp fa-regular fa-open" style="color: #ffffff;"></i>
+              Revisar Sintactica
             </button>
           </li>
         </ul>
@@ -65,7 +100,7 @@
           <h2>Editor de User Stories</h2>
           <ul class='list-group'>
             <li class='list-group-item'>
-              <a href='#proyecto1' data-toggle='collapse'>Poryecto 1</a>
+              <a href='#proyecto1' data-toggle='collapse'>Proyecto 1</a>
               <div class='collapse' id='proyecto1'>
                 <ul class='list-group'>
                   <li class="list-group-item"><a href="#">US1</a></li>
@@ -82,11 +117,12 @@
       </div>
 
       <div class="col-md-10 col-sm-11">
-        <form action="prueba.php" method="post" id="frm-test">
+        <form action='/save' method="post" id="frm-test">
           <div class="form-group">
-            <textarea id="txt-content" name="txt-content"></textarea>
+            <textarea id="txt-content" name="txt-content" spellcheck="false"></textarea>
           </div>
-          <!-- <input type="submit" class="btn btn-default" id="btn-enviar" value="Mostrar Resultado"> -->
+          <!-- action="prueba.php"
+            <input type="submit" class="btn btn-default" id="btn-enviar" value="Mostrar Resultado"> -->
         </form>
       </div>
     </div>
